@@ -3,26 +3,26 @@
     "name":               "Noah Peters",
     "email":              "noahpeters@gmail.com"
   },
-  "name":                 "foscam",
+  "name":                 "overlook",
   "description":          "Remote control, view and config a Foscam/Tenvis IP camera",
-  "version":              "0.2.4",
+  "version":              "0.3.0",
   "repository": {
     "type":               "git",
-    "url":                "git://github.com/noahpeters/nodejs-foscam.git"
+    "url":                "git://github.com/noahpeters/overlook.git"
   },
   "bugs": {
-    "url":                "https://github.com/noahpeters/nodejs-foscam/issues"
+    "url":                "https://github.com/noahpeters/overlook/issues"
   },
-  "main":                 "foscam.js",
+  "main":                 "overlook.js",
   "dependencies":         {},
   "devDependencies":      {},
   "optionalDependencies": {},
   "engines": {
     "node":               "*"
   },
-  "keywords":             ["foscam", "tenvis", "camera", "ipcam", "webcam"],
+  "keywords":             ["overlook", "foscam", "tenvis", "camera", "ipcam", "webcam"],
   "license": {
     "type":               "Public Domain",
-    "url":                "https://github.com/noahpeters/nodejs-foscam/raw/master/UNLICENSE"
+    "url":                "https://github.com/noahpeters/overlook/raw/master/UNLICENSE"
   }
 }

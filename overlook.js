@@ -34,7 +34,7 @@ var http = require('http'),
     fs = require('fs'),
     EventEmitter = require('events').EventEmitter;
 
-var foscam = function () {
+var overlook = function () {
     var app = new EventEmitter();
     
     // defaults
@@ -422,4 +422,4 @@ var foscam = function () {
 };
 
 // ready
-module.exports = foscam;
+module.exports = overlook;

@@ -9,11 +9,12 @@ All included methods are based on Foscam's (fragmented) API documentation. Some 
 The installation and loading are simple with [NPM](https://npmjs.org/).
 
 ```sh
-npm install foscam
+npm install overlook
 ```
 
 ```js
-var cam = require('foscam')
+var Overlook = require('overlook');
+var cam = Overlook();
 
 cam.setup({
   host: 'mycamera.lan',
@@ -39,10 +40,10 @@ cam.control.decoder( 'left', function() {
 ### Or directly from Github
 
 ```sh
-git clone https://github.com/fvdm/nodejs-foscam.git
+git clone https://github.com/noahpeters/overlook.git
 ```
 ```js
-var cam = require('./nodejs-foscam')
+var cam = require('overlook')
 ```
 
 # Methods
