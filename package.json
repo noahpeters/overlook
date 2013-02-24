@@ -1,18 +1,17 @@
 {
   "author": {
-    "name":               "Franklin van de Meent",
-    "email":              "fr@nkl.in",
-    "url":                "http://frankl.in)"
+    "name":               "Noah Peters",
+    "email":              "noahpeters@gmail.com"
   },
   "name":                 "foscam",
   "description":          "Remote control, view and config a Foscam/Tenvis IP camera",
-  "version":              "0.2.2",
+  "version":              "0.2.3",
   "repository": {
     "type":               "git",
-    "url":                "git://github.com/fvdm/nodejs-foscam.git"
+    "url":                "git://github.com/noahpeters/nodejs-foscam.git"
   },
   "bugs": {
-    "url":                "https://github.com/fvdm/nodejs-foscam/issues"
+    "url":                "https://github.com/noahpeters/nodejs-foscam/issues"
   },
   "main":                 "foscam.js",
   "dependencies":         {},
@@ -24,6 +23,6 @@
   "keywords":             ["foscam", "tenvis", "camera", "ipcam", "webcam"],
   "license": {
     "type":               "Public Domain",
-    "url":                "https://github.com/fvdm/nodejs-foscam/raw/master/UNLICENSE"
+    "url":                "https://github.com/noahpeters/nodejs-foscam/raw/master/UNLICENSE"
   }
 }
