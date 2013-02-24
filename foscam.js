@@ -417,6 +417,8 @@ var foscam = function () {
     	req.end()
     	
     }
+    
+    return app;
 };
 
 // ready
