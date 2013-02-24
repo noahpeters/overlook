@@ -4,6 +4,8 @@ Remote control, view and config a Foscam/Tenvis IP camera.
 
 All included methods are based on Foscam's (fragmented) API documentation. Some features may not be supported by non-pan/tilt, older cameras or old firmware. So make sure you keep a backup of your camera settings, just in case.
 
+This project was forked from http://github.com/fvdm/nodejs-foscam
+
 # Usage
 
 The installation and loading are simple with [NPM](https://npmjs.org/).
@@ -21,7 +23,7 @@ cam.setup({
   port: 81,
   user: 'admin'
   pass: ''
-})
+});
 
 // start rotating left
 cam.control.decoder( 'left', function() {
@@ -30,11 +32,11 @@ cam.control.decoder( 'left', function() {
   cam.control.decoder( 'stop left', function() {
     
     // take a picture and store it on your computer
-    cam.snapshot( '/path/to/save.jpg', console.log )
+    cam.snapshot( '/path/to/save.jpg', console.log );
   
-  })
+  });
   
-})
+});
 ```
 
 ### Or directly from Github
@@ -43,7 +45,8 @@ cam.control.decoder( 'left', function() {
 git clone https://github.com/noahpeters/overlook.git
 ```
 ```js
-var cam = require('overlook')
+var Overlook = require('overlook');
+var cam = Overlook();
 ```
 
 # Methods
@@ -95,12 +98,12 @@ cam.setup(
 	},
 	function( status ) {
 		if( !status ) {
-			console.error( 'ERROR: can\'t connect' )
+			console.error( 'ERROR: can\'t connect' );
 		} else {
-			console.log( status )
+			console.log( status );
 		}
 	}
-)
+);
 ```
 
 ## status
@@ -110,7 +113,7 @@ cam.setup(
 Get basic details from the camera.
 
 ```js
-cam.status( console.log )
+cam.status( console.log );
 ```
 ```js
 { id: '001A11A00A0B',
@@ -140,7 +143,7 @@ cam.status( console.log )
 Get camera sensor settings.
 
 ```js
-cam.camera_params( console.log )
+cam.camera_params( console.log );
 ```
 ```js
 { resolution: 32,
@@ -164,10 +167,10 @@ When a `filename` is provided the callback will return either the *filename* on 
 // custom processing
 cam.snapshot( function( jpeg ) {
 	// add binary processing here
-})
+});
 
 // store locally
-cam.snapshot( './my_view.jpg', console.log )
+cam.snapshot( './my_view.jpg', console.log );
 ```
 
 ## preset.set
@@ -176,7 +179,7 @@ cam.snapshot( './my_view.jpg', console.log )
 Save current camera position in preset #`id`. You can set presets 1 to 16.
 
 ```js
-cam.preset.set( 3, console.log )
+cam.preset.set( 3, console.log );
 ```
 
 ## preset.go
@@ -185,7 +188,7 @@ cam.preset.set( 3, console.log )
 Move camera to the position as stored in preset #`id`. You can use presets 1 to 16.
 
 ```js
-cam.preset.go( 3, console.log )
+cam.preset.go( 3, console.log );
 ```
 
 ## control.decoder
@@ -281,7 +284,7 @@ Control camera movement, like pan and tilt.
 ```js
 cam.control.decoder( 'horizontal patrol', function() {
 	console.log( 'Camera moving left-right' )
-})
+});
 ```
 
 
@@ -379,8 +382,8 @@ Change a camera (sensor) setting.
 
 ```js
 cam.control.camera( 'resolution', 640, function() {
-	console.log( 'Resolution changed to 640x480' )
-})
+	console.log( 'Resolution changed to 640x480' );
+});
 ```
 
 ## System
@@ -392,8 +395,8 @@ Reboot the device
 
 ```js
 cam.reboot( function() {
-	console.log( 'Rebooting camera' )
-})
+	console.log( 'Rebooting camera' );
+});
 ```
 
 ## restore_factory
@@ -403,8 +406,8 @@ Reset all settings back to their factory values.
 
 ```js
 cam.restore_factory( function() {
-	console.log( 'Resetting camera settings to factory defaults' )
-})
+	console.log( 'Resetting camera settings to factory defaults' );
+});
 ```
 
 ## talk
@@ -461,9 +464,9 @@ cam.talk(
 		}
 	},
 	function( response ) {
-		console.log( response )
+		console.log( response );
 	}
-) 
+);
 ```
 
 
