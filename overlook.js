@@ -1,7 +1,7 @@
 /*
-Name:     nodejs-foscam
-Source:   https://github.com/fvdm/nodejs-foscam
-Feedback: https://github.com/fvdm/nodejs-foscam/issues
+Name:     overlook
+Source:   https://github.com/noahpeters/overlook
+Feedback: https://github.com/noahpeters/overlook/issues
 
 This is free and unencumbered software released into the public domain.
 
