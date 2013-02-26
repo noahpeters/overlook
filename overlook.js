@@ -440,30 +440,31 @@ var overlook = function () {
     var isStreaming = null;
     var findStreamingProcesses = function (callback) {
         var procexp = new RegExp("^ffmpeg.*" + app.settings.host.replace(/./g, "\\."), "i");
-        var procs = processes();
-        var count = 0;
-        for (var pid in procs) {
-            if (!Object[pid]) {
-                if (!procexp.match(procs[pid])) {
-                    delete procs[pid];
-                } else {
-                    count++;
+        processes(function (procs) {
+            var count = 0;
+            for (var pid in procs) {
+                if (!Object[pid]) {
+                    if (!procexp.match(procs[pid])) {
+                        delete procs[pid];
+                    } else {
+                        count++;
+                    }
                 }
             }
-        }
-        if (count > 0) {
-            isStreaming = true;
-        } else {
-            isStreaming = false;
-        }
-        callback(procs);
+            if (count > 0) {
+                isStreaming = true;
+            } else {
+                isStreaming = false;
+            }
+            callback(procs);
+        });
     };
     
     
     app.startStreaming = function (directory) {
         directory = directory || app.settings.streamingDirectory;
         app.settings.streamingDirectory = directory;
-        return;
+//        return;
         if (isStreaming === true) {
             console.log("already streaming");
             return;
