@@ -537,10 +537,12 @@ var overlook = function () {
                     callback(false, err);
                 } 
                 var files = data.toString().split("\n");
-                secondFile = files.pop();   
+                secondFile = files.pop();  
+                console.log("secondFile: " + secondFile);
                 if (!firstFile) {
                     fs.link(app.settings.streamingDirectory + "/" + secondFile, path);
                 } else {
+                    console.log("running ffmpeg");
                     exec('ffmpeg -i "concat:$file1|$file2" $outfile',
                         { 
                             cwd : app.settings.streamingDirectory,
@@ -555,6 +557,7 @@ var overlook = function () {
                                 return;
                             }
                             if (err) {
+                                console.log(stderr, stdout);
                                 callback(false, err);
                             }
                             callback(path);
@@ -570,7 +573,8 @@ var overlook = function () {
                 return;
             } 
             var files = data.toString().split("\n");
-            firstFile = files.pop();            
+            firstFile = files.pop();      
+            console.log("firstFile: " + firstFile);
         });
     };
     
