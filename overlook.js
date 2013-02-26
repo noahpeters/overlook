@@ -477,7 +477,7 @@ var overlook = function () {
         isStreaming = true; // block additional streams from being started
         {
             var ffmpeg;            
-            ffmpeg = exec('ffmpeg -y -i "http://$streamhost/videostream.asf?user=$streamuser&pwd=$streampass" -map 0 -vcodec libx264 -acodec libfaac -ab 32k -ar 22050 -f ssegment -segment_list out.list -segment_time 10 -segment_wrap 8640 $streamalias%04d.ts',
+            ffmpeg = exec('ffmpeg -y -i "http://$streamhost/videostream.asf?user=$streamuser&pwd=$streampass" -map 0 -vcodec libx264 -acodec libfaac -ab 32k -ar 22050 -f ssegment -segment_list out.list -segment_time 10 -segment_wrap 8640 "$streamalias%04d.ts"',
                 { 
                     cwd : directory,
                     env : {
