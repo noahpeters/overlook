@@ -570,7 +570,7 @@ var overlook = function () {
                 return;
             } 
             console.log(data);
-            var files = data.split("\n");
+            var files = data.toString().split("\n");
             firstFile = files.pop();            
         });
     };
