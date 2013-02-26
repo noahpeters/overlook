@@ -484,7 +484,7 @@ var overlook = function () {
                         "streamhost": app.settings.host + (app.settings.port != 80 ? ":" + app.settings.port : ""),
                         "streamuser": app.settings.user,
                         "streampass": app.settings.pass, 
-                        "streamalias": null
+                        "streamalias": app.properties.alias
                     }
                 },
                 function (err, stdout, stderr) { 
