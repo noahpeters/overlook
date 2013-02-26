@@ -528,7 +528,7 @@ var overlook = function () {
         var firstFile = false, secondFile = false, aborted = false;
         fs.watch(app.settings.streamingDirectory + "/out.list", function (event) {
             // concat files: ffmpeg -i concat:"video1.ts|video2.ts"
-            fs.readFile(app.settings.streamingDirectory + "/out.list", function (err, data) {
+            fs.readFile(app.settings.streamingDirectory + "/out.list", "utf8", function (err, data) {
                 if (aborted) {
                     return;
                 }
@@ -536,7 +536,7 @@ var overlook = function () {
                     aborted = true;
                     callback(false, err);
                 } 
-                var files = data.split("\n");
+                var files = data.toString().split("\n");
                 secondFile = files.pop();   
                 if (!firstFile) {
                     fs.link(app.settings.streamingDirectory + "/" + secondFile, path);
