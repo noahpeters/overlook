@@ -526,8 +526,10 @@ var overlook = function () {
             return;
         }
         var firstFile = false, secondFile = false, aborted = false;
-        fs.watch(app.settings.streamingDirectory + "/out.list", function (event) {
+        var watcher = fs.watch(app.settings.streamingDirectory + "/out.list", function (event) {
             // concat files: ffmpeg -i concat:"video1.ts|video2.ts"
+            watcher.close();
+            watcher = null;
             fs.readFile(app.settings.streamingDirectory + "/out.list", "utf8", function (err, data) {
                 if (aborted) {
                     return;
@@ -545,7 +547,7 @@ var overlook = function () {
                     fs.link(app.settings.streamingDirectory + "/" + secondFile, path);
                 } else {
                     console.log("running ffmpeg");
-                    exec('ffmpeg -i "concat:$file1|$file2" $outfile',
+                    exec('ffmpeg -i "concat:$file1|$file2" -vcodec libx264 -acodec libfaac $outfile',
                         { 
                             cwd : app.settings.streamingDirectory,
                             env : {
