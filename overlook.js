@@ -463,6 +463,7 @@ var overlook = function () {
     app.startStreaming = function (directory) {
         directory = directory || app.settings.streamingDirectory;
         app.settings.streamingDirectory = directory;
+        return;
         if (isStreaming === true) {
             console.log("already streaming");
             return;
