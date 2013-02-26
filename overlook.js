@@ -569,7 +569,6 @@ var overlook = function () {
                 callback(false, err);
                 return;
             } 
-            console.log(data);
             var files = data.toString().split("\n");
             firstFile = files.pop();            
         });
