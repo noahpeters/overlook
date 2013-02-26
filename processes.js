@@ -11,7 +11,9 @@ var processes = function (callback) {
             var cols = proc.split(" ");
             obj[cols.shift()] = cols.join(" ");
         });
-        callback(obj);
+        if (typeof callback === "function") {
+            callback(obj);
+        }
     });
 };
 module.exports = processes;
