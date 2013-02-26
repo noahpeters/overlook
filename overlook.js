@@ -32,7 +32,10 @@ For more information, please refer to <http://unlicense.org/>
 var http = require('http'),
     querystring = require('querystring'),
     fs = require('fs'),
-    EventEmitter = require('events').EventEmitter;
+    EventEmitter = require('events').EventEmitter,
+    exec = require('child_process').exec,
+//    process = require('process'),
+    processes = require('./processes');
 
 var overlook = function () {
     var app = new EventEmitter();
@@ -44,6 +47,8 @@ var overlook = function () {
         user:   'admin',
         pass:   ''
     };
+    
+    app.properties = { };
     
     // overrides
     app.setup = function( props, cb ) {
@@ -121,7 +126,19 @@ var overlook = function () {
                     }[result.upnp_status]||"unknown";
                 }
                 
-                cb( result );
+                for (var prop in result) {
+                    if (!Object[prop]) {
+                        if (app.properties[prop] !== result[prop]) {
+                            var prev = app.properties[prop];
+                            app.properties[prop] = result[prop];
+                            app.emit(prop + "Changed", prev, result[prop]);
+                        }
+                    }
+                }
+                
+                if (typeof cb === "function") {
+                    cb( result );
+                }
             }
         });
     };
@@ -368,8 +385,8 @@ var overlook = function () {
                                 cb( bin );
                         }
                 }
-        })
-    }
+        });
+    };
     
     
     // communicate
@@ -417,6 +434,144 @@ var overlook = function () {
         // disconnect
         req.end();
         
+    };
+    
+    
+    var isStreaming = null;
+    var findStreamingProcesses = function (callback) {
+        var procexp = new RegExp("^ffmpeg.*" + app.settings.host.replace(/./g, "\\."), "i");
+        var procs = processes();
+        var count = 0;
+        for (var pid in procs) {
+            if (!Object[pid]) {
+                if (!procexp.match(procs[pid])) {
+                    delete procs[pid];
+                } else {
+                    count++;
+                }
+            }
+        }
+        if (count > 0) {
+            isStreaming = true;
+        } else {
+            isStreaming = false;
+        }
+        callback(procs);
+    };
+    
+    
+    app.startStreaming = function (directory) {
+        if (isStreaming === true) {
+            console.log("already streaming");
+            return;
+        } else if (isStreaming !== false) {
+            findStreamingProcesses(function () {
+                app.startStreaming(directory);
+            });
+            return;
+        }
+        isStreaming = true; // block additional streams from being started
+        directory = directory || app.settings.streamingDirectory;
+        app.settings.streamingDirectory = directory;
+        {
+            var ffmpeg;            
+            ffmpeg = exec('ffmpeg -y -i "http://$streamhost/videostream.asf?user=$streamuser&pwd=$streampass" -map 0 -vcodec libx264 -acodec libfaac -ab 32k -ar 22050 -f ssegment -segment_list out.list -segment_time 10 -segment_wrap 8640 $streamalias%04d.ts',
+                { 
+                    cwd : directory,
+                    env : {
+                        "streamhost": app.settings.host + (app.settings.port != 80 ? ":" + app.settings.port : ""),
+                        "streamuser": app.settings.user,
+                        "streampass": app.settings.pass, 
+                        "streamalias": null
+                    }
+                },
+                function (err, stdout, stderr) { 
+                    isStreaming = null; // streaming status will be indeterminite until processess are searched
+                }
+            );
+        }
+    };
+    
+    
+    app.stopStreaming = function (force) {
+        if (isStreaming === false) {
+            console.log("not streaming");
+            return;
+        } else if (isStreaming !== true) {
+            findStreamingProcesses(function () {
+                app.stopStreaming(force);
+            });
+            return;
+        }
+        isStreaming = null; // streaming status will be indeterminite until processess are searched
+        findStreamingProcesses(function (procs) {
+            for (var pid in procs) {
+                if (!Object[pid]) {
+                    process.kill(pid, force?'SIGTERM':'SIGHUP');
+                }
+            }
+        });
+    };
+    
+    
+    app.clip = function (path, callback) {
+        if (isStreaming === false) {
+            console.log("not streaming");
+            callback(false);
+            return;
+        } else if (isStreaming !== true) {
+            findStreamingProcesses(function () {
+                app.clip(path, callback);
+            });
+            return;
+        }
+        var firstFile = false, secondFile = false, aborted = false;
+        fs.watch(app.settings.streamingDirectory + "/out.list", function (event) {
+            // concat files: ffmpeg -i concat:"video1.ts|video2.ts"
+            fs.readFile(app.settings.streamingDirectory + "/out.list", function (err, data) {
+                if (aborted) {
+                    return;
+                }
+                if (err) {
+                    aborted = true;
+                    callback(false, err);
+                } 
+                var files = data.split("\n");
+                secondFile = files.pop();   
+                if (!firstFile) {
+                    fs.link(app.settings.streamingDirectory + "/" + secondFile, path);
+                } else {
+                    exec('ffmpeg -i "concat:$file1|$file2" $outfile',
+                        { 
+                            cwd : app.settings.streamingDirectory,
+                            env : {
+                                "file1": firstFile,
+                                "file2": secondFile,
+                                "outfile": path
+                            }
+                        },
+                        function (err, stdout, stderr) { 
+                            if (aborted) {
+                                return;
+                            }
+                            if (err) {
+                                callback(false, err);
+                            }
+                            callback(path);
+                        }
+                    );
+                }
+            });
+        });
+        fs.readFile(app.settings.streamingDirectory + "/out.list", function (err, data) {
+            if (err) {
+                aborted = true;
+                callback(false, err);
+                return;
+            } 
+            var files = data.split("\n");
+            firstFile = files.pop();            
+        });
     };
     
     return app;
