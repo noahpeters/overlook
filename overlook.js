@@ -563,7 +563,7 @@ var overlook = function () {
                 }
             });
         });
-        fs.readFile(app.settings.streamingDirectory + "/out.list", function (err, data) {
+        fs.readFile(app.settings.streamingDirectory + "/out.list", "utf8", function (err, data) {
             if (err) {
                 aborted = true;
                 callback(false, err);
