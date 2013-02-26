@@ -537,7 +537,9 @@ var overlook = function () {
                     callback(false, err);
                 } 
                 var files = data.toString().split("\n");
-                secondFile = files.pop();  
+                while (!secondFile && files.length > 0) {
+                    secondFile = files.pop();  
+                }
                 console.log("secondFile: " + secondFile);
                 if (!firstFile) {
                     fs.link(app.settings.streamingDirectory + "/" + secondFile, path);
@@ -573,7 +575,9 @@ var overlook = function () {
                 return;
             } 
             var files = data.toString().split("\n");
-            firstFile = files.pop();      
+            while (!firstFile && files.length > 0) {
+                firstFile = files.pop();      
+            }
             console.log("firstFile: " + firstFile);
         });
     };
