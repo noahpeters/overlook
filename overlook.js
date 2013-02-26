@@ -569,7 +569,9 @@ var overlook = function () {
                 callback(false, err);
                 return;
             } 
-            firstFile = data.pop();            
+            console.log(data);
+            var files = data.split("\n");
+            firstFile = files.pop();            
         });
     };
     
