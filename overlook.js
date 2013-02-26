@@ -461,6 +461,8 @@ var overlook = function () {
     
     
     app.startStreaming = function (directory) {
+        directory = directory || app.settings.streamingDirectory;
+        app.settings.streamingDirectory = directory;
         if (isStreaming === true) {
             console.log("already streaming");
             return;
@@ -471,8 +473,6 @@ var overlook = function () {
             return;
         }
         isStreaming = true; // block additional streams from being started
-        directory = directory || app.settings.streamingDirectory;
-        app.settings.streamingDirectory = directory;
         {
             var ffmpeg;            
             ffmpeg = exec('ffmpeg -y -i "http://$streamhost/videostream.asf?user=$streamuser&pwd=$streampass" -map 0 -vcodec libx264 -acodec libfaac -ab 32k -ar 22050 -f ssegment -segment_list out.list -segment_time 10 -segment_wrap 8640 $streamalias%04d.ts',
