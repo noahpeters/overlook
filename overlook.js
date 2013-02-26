@@ -444,7 +444,7 @@ var overlook = function () {
             var count = 0;
             for (var pid in procs) {
                 if (!Object[pid]) {
-                    if (!procexp.match(procs[pid])) {
+                    if (!procexp.test(procs[pid])) {
                         delete procs[pid];
                     } else {
                         count++;
