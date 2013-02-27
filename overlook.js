@@ -530,6 +530,7 @@ var overlook = function () {
         var firstFile = false, secondFile = false, aborted = false;
         var watcher = fs.watch(app.settings.streamingDirectory + "/out.list", function (event) {
             // concat files: ffmpeg -i concat:"video1.ts|video2.ts"
+            // for now, only send the last file
             watcher.close();
             watcher = null;
             fs.readFile(app.settings.streamingDirectory + "/out.list", "utf8", function (err, data) {
@@ -545,11 +546,33 @@ var overlook = function () {
                     secondFile = files.pop();  
                 }
                 console.log("secondFile: " + secondFile);
-                if (!firstFile) {
-                    fs.link(app.settings.streamingDirectory + "/" + secondFile, path);
-                } else {
+//                if (!firstFile) {
+//                    fs.link(app.settings.streamingDirectory + "/" + secondFile, path);
+//                } else {
                     console.log("running ffmpeg");
-                    exec('ffmpeg -i "concat:$file1|$file2" -vcodec libx264 -acodec libfaac $outfile',
+//                    exec(
+//                        'ffmpeg -i "concat:$file1|$file2" -vcodec libx264 -acodec libfaac $outfile',
+//                        { 
+//                            cwd : app.settings.streamingDirectory,
+//                            env : {
+//                                "file1": firstFile,
+//                                "file2": secondFile,
+//                                "outfile": path
+//                            }
+//                        },
+//                        function (err, stdout, stderr) { 
+//                            if (aborted) {
+//                                return;
+//                            }
+//                            if (err) {
+//                                console.log(stderr, stdout);
+//                                callback(false, err);
+//                            }
+//                            callback(path);
+//                        }
+//                    );
+                    exec(
+                        'ffmpeg -i "$file2" -vcodec copy -acodec copy $outfile',
                         { 
                             cwd : app.settings.streamingDirectory,
                             env : {
@@ -569,7 +592,7 @@ var overlook = function () {
                             callback(path);
                         }
                     );
-                }
+//                }
             });
         });
         fs.readFile(app.settings.streamingDirectory + "/out.list", "utf8", function (err, data) {
