@@ -35,7 +35,8 @@ var http = require('http'),
     EventEmitter = require('events').EventEmitter,
     exec = require('child_process').exec,
 //    process = require('process'),
-    processes = require('./processes');
+    processes = require('./processes'),
+    Tail = require("tail").Tail;
 
 var overlook = function () {
     var app = new EventEmitter();
@@ -527,85 +528,37 @@ var overlook = function () {
             });
             return;
         }
-        var firstFile = false, secondFile = false, aborted = false;
-        var watcher = fs.watch(app.settings.streamingDirectory + "/out.list", function (event) {
-            // concat files: ffmpeg -i concat:"video1.ts|video2.ts"
-            // for now, only send the last file
-            watcher.close();
-            watcher = null;
-            fs.readFile(app.settings.streamingDirectory + "/out.list", "utf8", function (err, data) {
-                if (aborted) {
-                    return;
-                }
-                if (err) {
-                    aborted = true;
-                    callback(false, err);
-                } 
-                var files = data.toString().split("\n");
-                while (!secondFile && files.length > 0) {
-                    secondFile = files.pop();  
-                }
-                console.log("secondFile: " + secondFile);
-//                if (!firstFile) {
-//                    fs.link(app.settings.streamingDirectory + "/" + secondFile, path);
-//                } else {
-                    console.log("running ffmpeg");
-//                    exec(
-//                        'ffmpeg -i "concat:$file1|$file2" -vcodec libx264 -acodec libfaac $outfile',
-//                        { 
-//                            cwd : app.settings.streamingDirectory,
-//                            env : {
-//                                "file1": firstFile,
-//                                "file2": secondFile,
-//                                "outfile": path
-//                            }
-//                        },
-//                        function (err, stdout, stderr) { 
-//                            if (aborted) {
-//                                return;
-//                            }
-//                            if (err) {
-//                                console.log(stderr, stdout);
-//                                callback(false, err);
-//                            }
-//                            callback(path);
-//                        }
-//                    );
-                    exec(
-                        'ffmpeg -i "$file2" -vcodec copy -acodec copy $outfile',
-                        { 
-                            cwd : app.settings.streamingDirectory,
-                            env : {
-                                "file1": firstFile,
-                                "file2": secondFile,
-                                "outfile": path
-                            }
-                        },
-                        function (err, stdout, stderr) { 
-                            if (aborted) {
-                                return;
-                            }
-                            if (err) {
-                                console.log(stderr, stdout);
-                                callback(false, err);
-                            }
-                            callback(path);
-                        }
-                    );
-//                }
-            });
-        });
-        fs.readFile(app.settings.streamingDirectory + "/out.list", "utf8", function (err, data) {
-            if (err) {
-                aborted = true;
-                callback(false, err);
+        var secondFile = false, aborted = false;
+        var tail = new Tail(app.settings.streamingDirectory + "/out.list");
+        tail.on("line", function (data) {
+            tail.unwatch();
+             if (aborted) {
                 return;
-            } 
-            var files = data.toString().split("\n");
-            while (!firstFile && files.length > 0) {
-                firstFile = files.pop();      
             }
-            console.log("firstFile: " + firstFile);
+            aborted = true;
+            secondFile = data;
+            console.log("secondFile: " + secondFile);
+            console.log("running ffmpeg");
+            exec(
+                'ffmpeg -i "$file" -vcodec copy -acodec copy "$outfile"',
+                { 
+                    cwd : app.settings.streamingDirectory,
+                    env : {
+                        "file": secondFile,
+                        "outfile": path
+                    }
+                },
+                function (err, stdout, stderr) { 
+                    if (aborted) {
+                        return;
+                    }
+                    if (err) {
+                        console.log(stderr, stdout);
+                        callback(false, err);
+                    }
+                    callback(path);
+                }
+            );
         });
     };
     

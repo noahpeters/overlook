@@ -14,7 +14,7 @@
     "url":                "https://github.com/noahpeters/overlook/issues"
   },
   "main":                 "overlook.js",
-  "dependencies":         {},
+  "dependencies":         {"tail":"*"},
   "devDependencies":      {},
   "optionalDependencies": {},
   "engines": {
