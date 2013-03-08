@@ -440,7 +440,7 @@ var overlook = function () {
     
     var isStreaming = null;
     var findStreamingProcesses = function (callback) {
-        var procexp = new RegExp("^ffmpeg.*" + app.settings.host.replace(/./g, "\\."), "i");
+        var procexp = new RegExp("^ffmpeg.*" + app.settings.host.replace(/\./g, "\\."), "i");
         console.log("looking for processes: " + "^ffmpeg.*" + app.settings.host.replace(/./g, "\\."));
         processes(function (procs) {
             var count = 0;
