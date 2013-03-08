@@ -441,6 +441,7 @@ var overlook = function () {
     var isStreaming = null;
     var findStreamingProcesses = function (callback) {
         var procexp = new RegExp("^ffmpeg.*" + app.settings.host.replace(/./g, "\\."), "i");
+        console.log("looking for processes: " + "^ffmpeg.*" + app.settings.host.replace(/./g, "\\."));
         processes(function (procs) {
             var count = 0;
             for (var pid in procs) {
@@ -521,7 +522,7 @@ var overlook = function () {
     app.clip = function (path, callback) {
         if (isStreaming === false) {
             console.log("not streaming");
-            callback(false);
+            callback(false, "not streaming");
             return;
         } else if (isStreaming !== true) {
             findStreamingProcesses(function () {
@@ -538,7 +539,7 @@ var overlook = function () {
             }
             aborted = true;
             secondFile = data;
-            console.log("secondFile: " + secondFile);
+            console.log("File: " + secondFile);
             console.log("running ffmpeg");
             exec(
                 'ffmpeg -i "$file" -vcodec copy -acodec copy "$outfile"',
