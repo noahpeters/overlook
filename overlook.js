@@ -452,6 +452,7 @@ var overlook = function () {
                     }
                 }
             }
+            console.log(procs);
             if (count > 0) {
                 isStreaming = true;
             } else {
