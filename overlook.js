@@ -540,7 +540,7 @@ var overlook = function () {
             secondFile = data;
             console.log("File: " + secondFile);
             console.log("running ffmpeg");
-            exec(
+            var ffmpeg = exec(
                 'ffmpeg -i "$file" -vcodec copy -acodec copy "$outfile"',
                 { 
                     cwd : app.settings.streamingDirectory,
@@ -557,9 +557,13 @@ var overlook = function () {
                         console.log(stderr, stdout);
                         callback(false, err);
                     }
-                    callback(path);
+                    console.log(stderr, stdout);
                 }
             );
+            ffmpeg.on("exit", function (code, signal) {
+                console.log(code, signal);
+                callback(path);
+            });
         });
     };
     
