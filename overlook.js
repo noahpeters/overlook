@@ -541,7 +541,7 @@ var overlook = function () {
             console.log("File: " + secondFile);
             console.log("running ffmpeg");
             var ffmpeg = exec(
-                'ffmpeg -i "$file" -vcodec libx264 -acodec copy "$outfile"',
+                'ffmpeg -i "$file" -vcodec libx264 -acodec libfaac "$outfile"',
                 { 
                     cwd : app.settings.streamingDirectory,
                     env : {
