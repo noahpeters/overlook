@@ -518,7 +518,7 @@ var overlook = function () {
         });
     };
     
-    var segmentManager = new require('events').EventEmitter();
+    var segmentManager = new EventEmitter();
     segmentManager.start = function () {
         segmentManager.stop();
         segmentManager.start();
