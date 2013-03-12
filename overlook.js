@@ -518,6 +518,26 @@ var overlook = function () {
         });
     };
     
+    var segmentManager = new require('events').EventEmitter();
+    segmentManager.start = function () {
+        segmentManager.stop();
+        segmentManager.start();
+    };
+    segmentManager.stop = function () {
+        segmentManager.start = function () {
+            segmentManager.start = function () {};
+            segmentManager._tail = new Tail(app.settings.streamingDirectory + "/out.list");
+            segmentManager._listener = function (data) {
+                segmentManager.emit("segment", data); 
+            };
+            segmentManager._tail.on("line", segmentManager._listener);
+        };
+        if (segmentManager._listener) {
+            segmentManager._tail.removeListener("line", segmentManager._listener);
+            segmentManager._listener = null;
+        }
+    };
+    
     var savingInProgress = null;
     var appendFile = function (source, dest, callback) {
         var cat = exec('cat "$source" >> "$dest"', {
@@ -572,7 +592,7 @@ var overlook = function () {
         }
         savingInProgress = {
             tmpFile : "/tmp/" + uuid.v1(),
-            tail : new Tail(app.settings.streamingDirectory + "/out.list"),
+            tail : segmentManager,
             queue : [ ],
             next : function () {
                 var n = savingInProgress.queue.pop();
@@ -585,7 +605,7 @@ var overlook = function () {
                 n();
             }
         };
-        savingInProgress.tail.on("line", function (data) {
+        savingInProgress.tail.on("segment", function (data) {
             if (!savingInProgress) {
                return;
             }
@@ -594,6 +614,7 @@ var overlook = function () {
                 appendFile(data, savingInProgress.tmpFile, savingInProgress.next);
             });
         });
+        savingInProgress.tail.start();
         savingInProgress.next();
         callback(true);
     };
@@ -625,8 +646,8 @@ var overlook = function () {
             return;
         }
         var secondFile = false, aborted = false;
-        var tail = new Tail(app.settings.streamingDirectory + "/out.list");
-        tail.on("line", function (data) {
+        var tail = segmentManager;
+        tail.on("segment", function (data) {
             tail.unwatch();
              if (aborted) {
                 return;
@@ -660,6 +681,7 @@ var overlook = function () {
                 callback(path);
             });
         });
+        tail.start();
     };
     
     return app;
