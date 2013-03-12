@@ -15,7 +15,7 @@
   },
   "main":                 "overlook.js",
   "dependencies":         {
-      "tail":"*"
+      "tail":"*",
       "node-uuid":"*"
   },
   "devDependencies":      {},
