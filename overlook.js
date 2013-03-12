@@ -36,7 +36,8 @@ var http = require('http'),
     exec = require('child_process').exec,
 //    process = require('process'),
     processes = require('./processes'),
-    Tail = require("tail").Tail;
+    Tail = require("tail").Tail,
+    uuid = require("node-uuid");
 
 var overlook = function () {
     var app = new EventEmitter();
@@ -514,6 +515,99 @@ var overlook = function () {
                     process.kill(pid, force?'SIGTERM':'SIGHUP');
                 }
             }
+        });
+    };
+    
+    var savingInProgress = null;
+    var appendFile = function (source, dest, callback) {
+        var cat = exec('cat "$source" >> "$dest"', {
+            env : {
+                source : source,
+                dest : dest
+            }
+        });
+        cat.on("exit", callback);
+    };
+    
+    var encodeVideo = function (source, dest, callback) {
+        console.log("running ffmpeg");
+        var ffmpeg = exec(
+            'ffmpeg -i "$file" -vcodec libx264 -acodec libfaac "$outfile"',
+            { 
+                cwd : app.settings.streamingDirectory,
+                env : {
+                    "file": source,
+                    "outfile": dest
+                }
+            },
+            function (err, stdout, stderr) { 
+                if (err) {
+                    console.log(stderr, stdout);
+                    callback(false, err);
+                }
+                console.log(stderr, stdout);
+            }
+        );
+        ffmpeg.on("exit", function (code, signal) {
+            console.log(code, signal);
+            callback(dest);
+        });
+    };
+    
+    app.startSavingStream = function (callback) {
+        if (isStreaming === false) {
+            console.log("not streaming");
+            callback(false, "not streaming");
+            return;
+        } else if (isStreaming !== true) {
+            findStreamingProcesses(function () {
+                app.startSavingStream(callback);
+            });
+            return;
+        }
+        if (savingInProgress) {
+            console.log("already saving");
+            callback(false, "already saving");
+            return;
+        }
+        savingInProgress = {
+            tmpFile : "/tmp/" + uuid.v1(),
+            tail : new Tail(app.settings.streamingDirectory + "/out.list"),
+            queue : [ ],
+            next : function () {
+                var n = savingInProgress.queue.pop();
+                if (!n) {
+                    setTimeout(function () {
+                        savingInProgress.next();
+                    }, 100);
+                }
+                n();
+            }
+        };
+        savingInProgress.tail.on("line", function (data) {
+            if (!savingInProgress) {
+               return;
+            }
+            
+            savingInProgress.queue.push(function () {
+                appendFile(data, savingInProgress.tmpFile, savingInProgress.next);
+            });
+        });
+        savingInProgress.next();
+        callback(true);
+    };
+    
+    
+    app.stopSavingStream = function (path, callback) {
+        if (!savingInProgress) {
+            callback(false);
+            return;
+        }
+        savingInProgress.queue.push(function () {
+            encodeVideo(savingInProgress.tmpFile, path, function (success, err) {
+                savingInProgress = null;
+                callback(success, err);
+            });
         });
     };
     
