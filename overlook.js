@@ -580,6 +580,7 @@ var overlook = function () {
                     setTimeout(function () {
                         savingInProgress.next();
                     }, 100);
+                    return;
                 }
                 n();
             }
