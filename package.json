@@ -5,7 +5,7 @@
   },
   "name":                 "overlook",
   "description":          "Remote control, view and config a Foscam/Tenvis IP camera",
-  "version":              "0.4.33",
+  "version":              "0.4.34",
   "repository": {
     "type":               "git",
     "url":                "git://github.com/noahpeters/overlook.git"

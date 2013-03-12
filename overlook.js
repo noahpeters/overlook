@@ -541,6 +541,7 @@ var overlook = function () {
     var savingInProgress = null;
     var appendFile = function (source, dest, callback) {
         var cat = exec('cat "$source" >> "$dest"', {
+            cwd : app.settings.streamingDirectory,
             env : {
                 source : source,
                 dest : dest
