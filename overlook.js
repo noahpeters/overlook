@@ -630,6 +630,11 @@ var overlook = function () {
         }
         savingInProgress.queue.push(function () {
             encodeVideo(savingInProgress.tmpFile, path, function (success, err) {
+                if (success) {
+                    fs.unlink(savingInProgress.tmpFile);
+                } else {
+                    console.log("ffmpeg failed, orphaned file: " + savingInProgress.tmpFile);
+                }
                 savingInProgress = null;
                 callback(success, err);
             });
