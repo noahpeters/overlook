@@ -650,8 +650,7 @@ var overlook = function () {
         }
         var secondFile = false, aborted = false;
         var tail = segmentManager;
-        tail.on("segment", function (data) {
-            tail.unwatch();
+        tail.once("segment", function (data) {
              if (aborted) {
                 return;
             }
