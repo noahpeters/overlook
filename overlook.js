@@ -490,6 +490,7 @@ var overlook = function () {
                     }
                 },
                 function (err, stdout, stderr) { 
+                    console.log(err, stdout, stderr);
                     console.log("ffmpeg stopped");
                     isStreaming = null; // streaming status will be indeterminite until processess are searched
                 }
