@@ -540,6 +540,7 @@ var overlook = function () {
     
     var savingInProgress = null;
     var appendFile = function (source, dest, callback) {
+        console.log("appending file " + source + " to " + dest);
         var cat = exec('cat "$source" >> "$dest"', {
             cwd : app.settings.streamingDirectory,
             env : {
@@ -592,7 +593,7 @@ var overlook = function () {
             return;
         }
         savingInProgress = {
-            tmpFile : "/tmp/" + uuid.v1(),
+            tmpFile : "/tmp/" + uuid.v1() + ".ts",
             tail : segmentManager,
             queue : [ ],
             next : function () {
