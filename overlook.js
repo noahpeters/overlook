@@ -553,27 +553,28 @@ var overlook = function () {
     
     var encodeVideo = function (source, dest, callback) {
         console.log("running ffmpeg");
-        var ffmpeg = exec(
-            'ffmpeg -i "$file" -vcodec libx264 -acodec libfaac "$outfile"',
-            { 
-                cwd : app.settings.streamingDirectory,
-                env : {
-                    "file": source,
-                    "outfile": dest
-                }
-            },
-            function (err, stdout, stderr) { 
-                if (err) {
-                    console.log(stderr, stdout);
-                    callback(false, err);
-                }
-                console.log(stderr, stdout);
-            }
-        );
-        ffmpeg.on("exit", function (code, signal) {
-            console.log(code, signal);
-            callback(dest);
-        });
+//        var ffmpeg = exec(
+//            'ffmpeg -i "$file" -vcodec libx264 -acodec libfaac "$outfile"',
+//            { 
+//                cwd : app.settings.streamingDirectory,
+//                env : {
+//                    "file": source,
+//                    "outfile": dest
+//                }
+//            },
+//            function (err, stdout, stderr) { 
+//                if (err) {
+//                    console.log(stderr, stdout);
+//                    callback(false, err);
+//                }
+//                console.log(stderr, stdout);
+//            }
+//        );
+//        ffmpeg.on("exit", function (code, signal) {
+//            console.log(code, signal);
+//            callback(dest);
+//        });
+        callback(false);
     };
     
     app.startSavingStream = function (callback) {
